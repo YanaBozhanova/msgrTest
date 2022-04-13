@@ -21,7 +21,7 @@ public class AuthERIB {
 
     public String getTokenMessenger() throws IOException, URISyntaxException {
 
-        User user = new User ("mobile3", "55098", "11223");
+        User user = new User ("neruskiy", "55098", "11223");
 
         System.out.println("Регистрация приложения и получение mGUID. Ввод логина:");
         System.out.println();
