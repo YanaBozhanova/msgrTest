@@ -1,0 +1,17 @@
+//Конвертация и валидация тела ответа (Validating Response Body element/attribute)
+
+ 1) Получаем респонс как строку:
+
+  String responseBody=given().when().get("http://ergast.com/api/f1/2017/circuits.json").getBody().asString();
+
+ 2) Создаем объект типа JsonPath из строки (респонса)
+
+  JsonPath resJson=new JsonPath(responseBody);
+
+ 3) Извлекаем значение атрибута (в примере - атрибут "series") по пути в Json объекте
+
+   String seriesName=resJson.getString("MRData.series");
+
+ 4) Проверка на соответствие извлеченного значения атрибута с ожидаемым результатом
+
+   Assert.assertEquals("f1",seriesName);

@@ -1,28 +1,27 @@
 import io.restassured.http.Cookie;
 import io.restassured.response.Response;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import static io.restassured.RestAssured.given;
 import static org.junit.Assert.assertEquals;
 
-public class AuthERIB {
 
-    public AuthERIB() {
-    }
+public class AuthUFS {
+    private static String tokenOne = null;
+    private static String tokenUFS = null;
+    private static String tokenMessenger = null;
+    private static String mGUID = null;
+    private static Cookie ESAMAPIJSESSIONID = null;
+    private static Cookie JSESSIONID = null;
+    private static Cookie DPJSESSIONID = null;
+    private static Cookie UFS_SESSION = null;
+    private static Cookie UFS_TOKEN = null;
+    private static String hostUFS = null;
+    private static String host = null;
+    private static String login = "fedos";
 
-    private String tokenOne = null;
-    private String tokenTwo = null;
-    private String tokenMessenger;
-    private String mGUID = null;
-    private Cookie ESAMAPIJSESSIONID = null;
-    private Cookie JSESSIONID = null;
-    private Cookie DPJSESSIONID = null;
-    private String host = null;
 
-    public String getTokenMessenger() throws IOException, URISyntaxException {
+    public static String getTokenMessengerTestOfUFS() throws Exception {
 
-        User user = new User ("mobile3", "55098", "11223");
-
+        System.out.println();
         System.out.println("Регистрация приложения и получение mGUID. Ввод логина:");
         System.out.println();
 
@@ -30,7 +29,7 @@ public class AuthERIB {
                 .baseUri("https://psi-csa.testonline.sberbank.ru:4477")
                 .basePath("/CSAMAPI/registerApp.do")
                 .param("operation", "register")
-                .param("login", user.getUsername())
+                .param("login", login)
                 .param("version", "9.10")
                 .param("appType", "iPhone")
                 .param("appVersion", "5.5.0")
@@ -53,7 +52,7 @@ public class AuthERIB {
         System.out.println(ESAMAPIJSESSIONID);
         System.out.println(mGUID);
 
-
+        System.out.println();
         System.out.println("Подтверждение логина. Ввод смс-пароля:");
         System.out.println();
 
@@ -62,7 +61,7 @@ public class AuthERIB {
                 .basePath("/CSAMAPI/registerApp.do")
                 .param("operation", "confirm")
                 .param("mGUID", mGUID)
-                .param("smsPassword", user.getSms_password())
+                .param("smsPassword", "55098")
                 .param("version", "9.10")
                 .param("appType", "iPhone")
                 .header("Accept-Language", "ru;q=1")
@@ -70,7 +69,6 @@ public class AuthERIB {
                 .header("User-Agent", "Mobile Device")
                 .cookie(ESAMAPIJSESSIONID)
                 .cookie(JSESSIONID)
-                .log().all().request()
                 .log().body()
                 .when()
                 .post()
@@ -79,7 +77,7 @@ public class AuthERIB {
                 .extract().response();
         assertEquals(200, response2.statusCode());
 
-
+        System.out.println();
         System.out.println("Создание PIN:");
         System.out.println();
 
@@ -88,7 +86,7 @@ public class AuthERIB {
                 .basePath("/CSAMAPI/registerApp.do")
                 .param("operation", "createPIN")
                 .param("mGUID", mGUID)
-                .param("password", user.getPin())
+                .param("password", "11223")
                 .param("version", "9.10")
                 .param("appType", "iPhone")
                 .param("appVersion", "5.5.0")
@@ -107,14 +105,16 @@ public class AuthERIB {
                 .extract().response();
         assertEquals(0, response3.xmlPath().getInt("response.status.code"));
         tokenOne = response3.xmlPath().getString("response.loginData.token");
-        host =  response3.xmlPath().getString("response.loginData.host");
-        System.out.println("tokenOne=" + tokenOne);
+        host = response3.xmlPath().getString("response.loginData.host");
+        System.out.println("tokenOne = " + tokenOne);
+        System.out.println("host = " + host);
 
+        System.out.println();
         System.out.println("Аутентификация по токену в блоке. Получение профиля пользователя:");
         System.out.println();
 
         Response response4 = given()
-                .baseUri("https://mobile-" + host + ":4477")
+                .baseUri("https://mobile-" + host +":4477")
                 .basePath("/mobile9/postCSALogin.do")
                 .param("token", tokenOne)
                 .header("Accept-Language", "ru;q=1")
@@ -131,15 +131,15 @@ public class AuthERIB {
         DPJSESSIONID = response4.getDetailedCookie("DPJSESSIONID");
         JSESSIONID = response4.getDetailedCookie("JSESSIONID");
 
-
-        System.out.println("Получение токена ЕРИБ:");
+        System.out.println();
+        System.out.println("Получение токена ЕФС:");
         System.out.println();
 
         Response response5 = given()
                 .baseUri("https://mobile-" + host + ":4477")
                 .basePath("/mobile9/private/unifiedClientSession/getToken.do")
-                .param("systemName", "messenger")
-                .cookie(ESAMAPIJSESSIONID)
+                .param("systemName", "ufs7")
+              //  .cookie(ESAMAPIJSESSIONID)
                 .cookie(JSESSIONID)
                 .cookie(DPJSESSIONID)
                 .when().get()
@@ -147,33 +147,67 @@ public class AuthERIB {
                 .log().body()
                 .extract().response();
         assertEquals(0, response5.xmlPath().getInt("response.status.code"));
-        tokenTwo = response5.xmlPath().getString("response.token");
-        System.out.println("tokenTwo=" + tokenTwo);
+        tokenUFS = response5.xmlPath().getString("response.token");
+        hostUFS = response5.xmlPath().getString("response.host");
+        System.out.println("tokenUFS = " + tokenUFS);
+        System.out.println("hostUFS = "+ hostUFS);
 
-
-        System.out.println("Получение токена Мессенджера:");
+        System.out.println();
+        System.out.println("Создание зависимой сессии в ЕФС: ");
         System.out.println();
 
         Response response6 = given()
-                .baseUri("https://messenger-t.sberbank.ru:443")
-                .basePath("/api/device/auth_erib")
-                .header("Content-Type", "application/json")
-                .cookie(ESAMAPIJSESSIONID)
+                .baseUri("https://" + hostUFS)
+                .basePath("/sm-uko/v2/session/create")
+                .header("Content-Type","application/json")
+                //.cookie(ESAMAPIJSESSIONID)
                 .cookie(JSESSIONID)
                 .cookie(DPJSESSIONID)
                 .when()
-                .body("{\"device\":{\"version\":\"9.6.0.398\",\"model\":\"iPhone\",\"application_type\":\"MP_SBOL_IOS\",\"platform\":\"10.1.1\",\"uid\":\"035E992A-BF2C-4200-A517-2649A4B61382\"},\"business\":false,\"erib_auth_token\":\"" + tokenTwo + "\"}")
+                .body("{\"token\":\"" + tokenUFS + "\"}")
+                .log().all().request()
+                .post()
+                .then()
+                .log().body()
+                .extract().response();
+        assertEquals(true, response6.jsonPath().getBoolean("success"));
+        UFS_SESSION = response6.getDetailedCookie("UFS-SESSION");
+        UFS_TOKEN = response6.getDetailedCookie("UFS-TOKEN");
+        System.out.println(UFS_SESSION);
+        System.out.println(UFS_TOKEN);
+
+
+        System.out.println();
+        System.out.println("Получение токена Мессенджера:");
+        System.out.println();
+
+        Response response7 = given()
+                .baseUri("https://messenger-t.sberbank.ru:443")
+                .basePath("/api/device/auth_ufs")
+                .header("Content-Type", "application/json")
+                .header("X-UfsHost", hostUFS)
+                .header("X-MessengerDeviceID", "035E992A-BF2C-4200-A517-2649A4B67888")
+                .header("X-DeviceModel","iPhone")
+                .header("X-DevicePlatform", "10.1.1")
+                .header("X-ApplicationType","MP_SBOL_IOS")
+                .header("X-ApplicationVersion","12.11")
+                .cookie(ESAMAPIJSESSIONID)
+                .cookie(JSESSIONID)
+                .cookie(DPJSESSIONID)
+                .cookie(UFS_SESSION)
+                .cookie(UFS_TOKEN)
+                .log().all().request()
+                .when()
                 .post()
                 .then()
                 .log().body()
                 .extract().response();
 
-        assertEquals(200, response6.jsonPath().getInt("status"));
-        tokenMessenger = response6.jsonPath().get("token");
+        assertEquals(200, response7.jsonPath().getInt("status"));
+        tokenMessenger = response7.jsonPath().get("token");
         System.out.println("tokenMessenger=" + tokenMessenger);
+
+
         return tokenMessenger;
 
-    }
-
-
-}
+}}
