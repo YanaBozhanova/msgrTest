@@ -13,13 +13,14 @@ public class Loans {
 
     AuthERIB session = new AuthERIB();
     String X_Messenger_Token = session.getTokenMessenger();
+    String URL = ConfigurationStand.getBaseUrlPSI();
 
 
     @Test
     public void getLoans() throws IOException {
 
         Response response = given()
-                .baseUri("https://messenger-t.sberbank.ru:443")
+                .baseUri(URL)
                 .basePath("/api/loans/get")
                 .param("userId", "")
                 .param("isBorrower", "true")
@@ -42,7 +43,7 @@ public class Loans {
     public void getLoanById() throws Exception {
 
         Response response = given()
-                .baseUri("https://messenger-t.sberbank.ru:443")
+                .baseUri(URL)
                 .basePath("/api/loans/get_by_id")
                 .param("loanId", "200")
                 .header("X-Messenger-Token", X_Messenger_Token)

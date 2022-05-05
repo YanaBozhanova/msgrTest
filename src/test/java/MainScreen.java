@@ -8,6 +8,7 @@ import static org.junit.Assert.assertNotNull;
 public class MainScreen {
     AuthERIB session = new AuthERIB();
     String X_Messenger_Token = session.getTokenMessenger();
+    String URL = ConfigurationStand.getBaseUrlPSI();
 
     public MainScreen() throws IOException, URISyntaxException {
     }
@@ -16,7 +17,7 @@ public class MainScreen {
 
     public void getSequenceId() {
         Response response = given()
-                .baseUri("https://messenger-t.sberbank.ru:7766")
+                .baseUri(URL)
                 .basePath("/api/main/page/get_sequence_id")
                 .header("X_Messenger_Token", X_Messenger_Token)
                 .when()
@@ -34,7 +35,7 @@ public class MainScreen {
 
     public void getEventData(){
         Response response = given()
-                .baseUri("https://messenger-t.sberbank.ru:7766")
+                .baseUri(URL)
                 .basePath("/api/main/page/get_event_data")
                 .header("X_Messenger_Token", X_Messenger_Token)
                 .body("{\"sequence_id\": \"2980\",\"limit\": \"9\",\"version\": \"3.8\"}")
@@ -51,7 +52,7 @@ public class MainScreen {
 
     public void generateUserDeeplink(){
         Response response = given()
-                .baseUri("https://messenger-t.sberbank.ru:7766")
+                .baseUri(URL)
                 .basePath("/api/user/deeplink/generate")
                 .header("X_Messenger_Token", X_Messenger_Token)
                 .when()
@@ -72,7 +73,7 @@ public class MainScreen {
 
     public void getOrGenerateUserDeeplink(){
         Response response = given()
-                .baseUri("https://messenger-t.sberbank.ru:7766")
+                .baseUri(URL)
                 .basePath("/api/user/deeplink/get_or_generate")
                 .header("X_Messenger_Token", X_Messenger_Token)
                 .when()
@@ -86,5 +87,42 @@ public class MainScreen {
         assertNotNull(userDeeplink);
         assertNotNull(creationDate);
 
+    }
+
+    @Test
+    public void getConversations() throws IOException {
+
+        Response response = given()
+                .baseUri(URL)
+                .basePath("/api/main/page/get_conversations")
+                .header("X-Messenger-Token", X_Messenger_Token)
+                .header("Content-Type","application/json")
+                .body("{\"start_row\": 1, \"limit\": 5}")
+                .log().all().request()
+                .when()
+                .post()
+                .then()
+                .statusCode(200)
+                .log().body()
+                .extract().response();
+
+
+    }
+
+    @Test
+    public void getConversationsByIds() throws Exception {
+
+        Response response = given()
+                .baseUri(URL)
+                .basePath("/api/main/page/get_conversations_by_ids")
+                .header("X-Messenger-Token", X_Messenger_Token)
+                .header("Content-Type","application/json")
+                .body("{\"ids\": [609629901]}")
+                .when()
+                .post()
+                .then()
+                .statusCode(200)
+                .log().body()
+                .extract().response();
     }
     }
