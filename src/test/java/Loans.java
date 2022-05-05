@@ -1,4 +1,6 @@
+import io.restassured.RestAssured;
 import io.restassured.response.Response;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -14,6 +16,7 @@ public class Loans {
     AuthERIB session = new AuthERIB();
     String X_Messenger_Token = session.getTokenMessenger();
     String URL = ConfigurationStand.getBaseUrlPSI();
+
 
 
     @Test

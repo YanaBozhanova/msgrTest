@@ -2,11 +2,15 @@ public class User {
     private String username;
     private String sms_password;
     private String pin;
+    private String host;
+    private String host_block;
 
-    public User(String username, String sms_password, String pin) {
+    public User(String username, String sms_password, String pin, String host, String host_block) {
         this.username = username;
         this.sms_password = sms_password;
         this.pin = pin;
+        this.host = host;
+        this.host_block = host_block;
     }
 
 
@@ -33,4 +37,14 @@ public class User {
     public void setPin(String pin) {
         this.pin = pin;
     }
+
+    public String getHost() { return host; }
+
+    public void setHost(String host) { this.host = host;}
+
+    public String getHost_block() { return host_block; }
+
+    public void setHost_block (String host_block) { this.host_block = host_block;}
+
+
 }

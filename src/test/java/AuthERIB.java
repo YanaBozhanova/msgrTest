@@ -1,3 +1,4 @@
+import io.restassured.RestAssured;
 import io.restassured.http.Cookie;
 import io.restassured.response.Response;
 import java.io.IOException;
@@ -20,14 +21,15 @@ public class AuthERIB {
     private String host = null;
 
     public String getTokenMessenger() throws IOException, URISyntaxException {
+        RestAssured.useRelaxedHTTPSValidation();
 
-        User user = new User ("neruskiy", "55098", "11223");
+        User user = new User ("mobile3", "55098", "11223", "https://psi-csa.testonline.sberbank.ru:4477", "https://mobile-psinode1.testonline.sberbank.ru:4477");
 
         System.out.println("Регистрация приложения и получение mGUID. Ввод логина:");
         System.out.println();
 
         Response response1 = given()
-                .baseUri("https://psi-csa.testonline.sberbank.ru:4477")
+                .baseUri(user.getHost())
                 .basePath("/CSAMAPI/registerApp.do")
                 .param("operation", "register")
                 .param("login", user.getUsername())
@@ -58,7 +60,7 @@ public class AuthERIB {
         System.out.println();
 
         Response response2 = given()
-                .baseUri("https://psi-csa.testonline.sberbank.ru:4477")
+                .baseUri(user.getHost())
                 .basePath("/CSAMAPI/registerApp.do")
                 .param("operation", "confirm")
                 .param("mGUID", mGUID)
@@ -84,7 +86,7 @@ public class AuthERIB {
         System.out.println();
 
         Response response3 = given()
-                .baseUri("https://psi-csa.testonline.sberbank.ru:4477")
+                .baseUri(user.getHost())
                 .basePath("/CSAMAPI/registerApp.do")
                 .param("operation", "createPIN")
                 .param("mGUID", mGUID)
@@ -107,14 +109,14 @@ public class AuthERIB {
                 .extract().response();
         assertEquals(0, response3.xmlPath().getInt("response.status.code"));
         tokenOne = response3.xmlPath().getString("response.loginData.token");
-        host =  response3.xmlPath().getString("response.loginData.host");
+       // host =  response3.xmlPath().getString("response.loginData.host");
         System.out.println("tokenOne=" + tokenOne);
 
         System.out.println("Аутентификация по токену в блоке. Получение профиля пользователя:");
         System.out.println();
 
         Response response4 = given()
-                .baseUri("https://mobile-" + host + ":4477")
+                .baseUri(user.getHost_block())
                 .basePath("/mobile9/postCSALogin.do")
                 .param("token", tokenOne)
                 .header("Accept-Language", "ru;q=1")
@@ -136,7 +138,7 @@ public class AuthERIB {
         System.out.println();
 
         Response response5 = given()
-                .baseUri("https://mobile-" + host + ":4477")
+                .baseUri(user.getHost_block())
                 .basePath("/mobile9/private/unifiedClientSession/getToken.do")
                 .param("systemName", "messenger")
                 .cookie(ESAMAPIJSESSIONID)
