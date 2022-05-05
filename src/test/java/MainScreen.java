@@ -17,14 +17,14 @@ public class MainScreen {
 
 
     @Test
-    public void getSequenceId() throws IOException {
-
+    public void getSequenceId() throws IOException, URISyntaxException {
 
         Response response = given()
                 .baseUri(URL)
                 .basePath("/api/main/page/get_sequence_id")
-                .header("X_Messenger_Token", X_Messenger_Token)
+                .header("X-Messenger-Token", X_Messenger_Token)
                 .header("Content-Type","application/json")
+                .log().all().request()
                 .when()
                 .get()
                 .then()
@@ -42,7 +42,7 @@ public class MainScreen {
         Response response1 = given()
                 .baseUri(URL)
                 .basePath("/api/main/page/get_sequence_id")
-                .header("X_Messenger_Token", X_Messenger_Token)
+                .header("X-Messenger-Token", X_Messenger_Token)
                 .header("Content-Type","application/json")
                 .when()
                 .get()
@@ -56,7 +56,7 @@ public class MainScreen {
         Response response2 = given()
                 .baseUri(URL)
                 .basePath("/api/main/page/get_event_data")
-                .header("X_Messenger_Token", X_Messenger_Token)
+                .header("X-Messenger-Token", X_Messenger_Token)
                 .header("Content-Type","application/json")
                 .body("{\"sequence_id\":" + (sequence_id-10) + "\"limit\": \"9\",\"version\": \"3.8\"}")
                 .when()
@@ -74,7 +74,7 @@ public class MainScreen {
         Response response = given()
                 .baseUri(URL)
                 .basePath("/api/user/deeplink/generate")
-                .header("X_Messenger_Token", X_Messenger_Token)
+                .header("X-Messenger-Token", X_Messenger_Token)
                 .header("Content-Type","application/json")
                 .when()
                 .post()
@@ -96,7 +96,7 @@ public class MainScreen {
         Response response = given()
                 .baseUri(URL)
                 .basePath("/api/user/deeplink/get_or_generate")
-                .header("X_Messenger_Token", X_Messenger_Token)
+                .header("X-Messenger-Token", X_Messenger_Token)
                 .header("Content-Type","application/json")
                 .when()
                 .post()
