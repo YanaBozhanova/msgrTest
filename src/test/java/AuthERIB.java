@@ -18,7 +18,7 @@ public class AuthERIB {
     private Cookie ESAMAPIJSESSIONID = null;
     private Cookie JSESSIONID = null;
     private Cookie DPJSESSIONID = null;
-    private String host = null;
+ //   private String host = null;
 
     public String getTokenMessenger() throws IOException, URISyntaxException {
         RestAssured.useRelaxedHTTPSValidation();
