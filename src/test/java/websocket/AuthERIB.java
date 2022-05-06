@@ -1,3 +1,5 @@
+package websocket;
+
 import io.restassured.RestAssured;
 import io.restassured.http.Cookie;
 import io.restassured.response.Response;
@@ -40,7 +42,7 @@ public class AuthERIB {
                 .param("devID", "08D4B172-B264-419A-BFBE-6EA7E00B6239")
                 .header("Accept-Language", "ru;q=1")
                 .header("Content-Type", "application/x-www-form-urlencoded")
-                .header("User-Agent", "Mobile Device")
+                .header("websocket.User-Agent", "Mobile Device")
                 .when()
                 .post()
                 .then()
@@ -69,7 +71,7 @@ public class AuthERIB {
                 .param("appType", "iPhone")
                 .header("Accept-Language", "ru;q=1")
                 .header("Content-Type", "application/x-www-form-urlencoded")
-                .header("User-Agent", "Mobile Device")
+                .header("websocket.User-Agent", "Mobile Device")
                 .cookie(ESAMAPIJSESSIONID)
                 .cookie(JSESSIONID)
                 .log().all().request()
@@ -100,7 +102,7 @@ public class AuthERIB {
                 .param("mobileSdkData", "1")
                 .header("Accept-Language", "ru;q=1")
                 .header("Content-Type", "application/x-www-form-urlencoded")
-                .header("User-Agent", "Mobile Device")
+                .header("websocket.User-Agent", "Mobile Device")
                 .cookie(ESAMAPIJSESSIONID)
                 .cookie(JSESSIONID)
                 .log().all().request()
@@ -122,7 +124,7 @@ public class AuthERIB {
                 .param("token", tokenOne)
                 .header("Accept-Language", "ru;q=1")
                 .header("Content-Type", "application/x-www-form-urlencoded")
-                .header("User-Agent", "Mobile Device")
+                .header("websocket.User-Agent", "Mobile Device")
                 .cookie(ESAMAPIJSESSIONID)
                 .cookie(JSESSIONID)
                 .log().all().request()

@@ -1,3 +1,5 @@
+package websocket;
+
 public class User {
     private String username;
     private String sms_password;
