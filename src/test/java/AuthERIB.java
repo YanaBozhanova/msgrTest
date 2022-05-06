@@ -13,17 +13,17 @@ public class AuthERIB {
 
     private String tokenOne = null;
     private String tokenTwo = null;
-    private String tokenMessenger;
+    private String tokenMessenger = null;
     private String mGUID = null;
     private Cookie ESAMAPIJSESSIONID = null;
     private Cookie JSESSIONID = null;
     private Cookie DPJSESSIONID = null;
- //   private String host = null;
+    private String host = null;
 
     public String getTokenMessenger() throws IOException, URISyntaxException {
         RestAssured.useRelaxedHTTPSValidation();
 
-        User user = new User ("mobile3", "55098", "11223", "https://psi-csa.testonline.sberbank.ru:4477", "https://mobile-psinode1.testonline.sberbank.ru:4477");
+        User user = new User ("mobile3", "55098", "11223", "https://psi-csa.testonline.sberbank.ru:4477");
 
         System.out.println("Регистрация приложения и получение mGUID. Ввод логина:");
         System.out.println();
@@ -103,20 +103,21 @@ public class AuthERIB {
                 .header("User-Agent", "Mobile Device")
                 .cookie(ESAMAPIJSESSIONID)
                 .cookie(JSESSIONID)
+                .log().all().request()
                 .when().post()
                 .then()
                 .log().body()
                 .extract().response();
         assertEquals(0, response3.xmlPath().getInt("response.status.code"));
         tokenOne = response3.xmlPath().getString("response.loginData.token");
-       // host =  response3.xmlPath().getString("response.loginData.host");
+        host =  response3.xmlPath().getString("response.loginData.host");
         System.out.println("tokenOne=" + tokenOne);
 
         System.out.println("Аутентификация по токену в блоке. Получение профиля пользователя:");
         System.out.println();
 
         Response response4 = given()
-                .baseUri(user.getHost_block())
+                .baseUri("https://mobile-"+host+":4477")
                 .basePath("/mobile9/postCSALogin.do")
                 .param("token", tokenOne)
                 .header("Accept-Language", "ru;q=1")
@@ -124,6 +125,7 @@ public class AuthERIB {
                 .header("User-Agent", "Mobile Device")
                 .cookie(ESAMAPIJSESSIONID)
                 .cookie(JSESSIONID)
+                .log().all().request()
                 .when().post()
                 .then()
                 .log().body()
@@ -138,12 +140,13 @@ public class AuthERIB {
         System.out.println();
 
         Response response5 = given()
-                .baseUri(user.getHost_block())
+                .baseUri("https://mobile-"+host+":4477")
                 .basePath("/mobile9/private/unifiedClientSession/getToken.do")
                 .param("systemName", "messenger")
                 .cookie(ESAMAPIJSESSIONID)
                 .cookie(JSESSIONID)
                 .cookie(DPJSESSIONID)
+                .log().all().request()
                 .when().get()
                 .then()
                 .log().body()
@@ -163,6 +166,7 @@ public class AuthERIB {
                 .cookie(ESAMAPIJSESSIONID)
                 .cookie(JSESSIONID)
                 .cookie(DPJSESSIONID)
+                .log().all().request()
                 .when()
                 .body("{\"device\":{\"version\":\"9.6.0.398\",\"model\":\"iPhone\",\"application_type\":\"MP_SBOL_IOS\",\"platform\":\"10.1.1\",\"uid\":\"035E992A-BF2C-4200-A517-2649A4B61382\"},\"business\":false,\"erib_auth_token\":\"" + tokenTwo + "\"}")
                 .post()

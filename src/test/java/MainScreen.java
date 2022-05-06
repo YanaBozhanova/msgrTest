@@ -31,8 +31,8 @@ public class MainScreen {
                 .statusCode(200)
                 .log().body()
                 .extract().response();
-    //  Integer sequence_id = response.jsonPath().get("sequence_id");
-    //  Assertions.assertNotNull(sequence_id);
+    Integer sequence_id = response.jsonPath().get("sequence_id");
+    Assertions.assertNotNull(sequence_id);
 
     }
 
@@ -51,6 +51,7 @@ public class MainScreen {
                 .log().body()
                 .extract().response();
         Integer sequence_id = response1.jsonPath().get("sequence_id");
+        String seq_id = Integer.toString(sequence_id-10);
 
 
         Response response2 = given()
@@ -58,7 +59,8 @@ public class MainScreen {
                 .basePath("/api/main/page/get_event_data")
                 .header("X-Messenger-Token", X_Messenger_Token)
                 .header("Content-Type","application/json")
-                .body("{\"sequence_id\":" + (sequence_id-10) + "\"limit\": \"9\",\"version\": \"3.8\"}")
+                .body("{\"sequence_id\":" + seq_id + ", \"limit\": 9,\"version\": \"3.8\"}")
+                .log().all().request()
                 .when()
                 .post()
                 .then()
@@ -82,10 +84,10 @@ public class MainScreen {
                 .statusCode(200)
                 .log().body()
                 .extract().response();
-      // String userDeeplink = response.jsonPath().get("deeplink");
-      // Long creationDate = response.jsonPath().get("creation_date");
-      //Assertions.assertNotNull(userDeeplink);
-     // Assertions.assertNotNull(creationDate);
+      String userDeeplink = response.jsonPath().get("deeplink");
+      Integer creationDate = response.jsonPath().get("creation_date");
+      Assertions.assertNotNull(userDeeplink);
+      Assertions.assertNotNull(creationDate);
 
     }
 

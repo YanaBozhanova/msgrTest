@@ -16,7 +16,7 @@ public class AuthUFS {
     private static Cookie UFS_SESSION = null;
     private static Cookie UFS_TOKEN = null;
     private static String hostUFS = null;
-  //  private static String host = null;
+    private static String host = null;
     private static String login = "fedos";
 
 
@@ -24,7 +24,7 @@ public class AuthUFS {
 
         RestAssured.useRelaxedHTTPSValidation();
 
-        User user = new User ("mobile3", "55098", "11223", "https://psi-csa.testonline.sberbank.ru:4477", "https://mobile-psinode1.testonline.sberbank.ru:4477");
+        User user = new User ("mobile3", "55098", "11223", "https://psi-csa.testonline.sberbank.ru:4477");
 
 
         System.out.println();
@@ -111,16 +111,16 @@ public class AuthUFS {
                 .extract().response();
         assertEquals(0, response3.xmlPath().getInt("response.status.code"));
         tokenOne = response3.xmlPath().getString("response.loginData.token");
-        //host = response3.xmlPath().getString("response.loginData.host");
+        host = response3.xmlPath().getString("response.loginData.host");
         System.out.println("tokenOne = " + tokenOne);
-    //    System.out.println("host = " + host);
+        System.out.println("host = " + host);
 
         System.out.println();
         System.out.println("Аутентификация по токену в блоке. Получение профиля пользователя:");
         System.out.println();
 
         Response response4 = given()
-                .baseUri(user.getHost_block())
+                .baseUri("https://mobile-"+host+":4477")
                 .basePath("/mobile9/postCSALogin.do")
                 .param("token", tokenOne)
                 .header("Accept-Language", "ru;q=1")
@@ -142,7 +142,7 @@ public class AuthUFS {
         System.out.println();
 
         Response response5 = given()
-                .baseUri(user.getHost_block())
+                .baseUri("https://mobile-"+host+":4477")
                 .basePath("/mobile9/private/unifiedClientSession/getToken.do")
                 .param("systemName", "ufs7")
               //  .cookie(ESAMAPIJSESSIONID)
